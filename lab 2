@@ -1,0 +1,70 @@
+#include <iostream>
+#include <vector>
+#include <cmath>
+#include <algorithm>
+
+using namespace std;
+
+
+vector<int> fold_and_number(int k) {
+    int n = pow(2, k);
+    vector<int> strip(n, 0); // Исходная полоска
+    vector<int> order;       // Порядок клеток после складывания
+    
+    // Инициализация полоски номерами от 1 до 2^k
+    for (int i = 0; i < n; ++i) {
+        strip[i] = i + 1;
+    }
+    
+    while (strip.size() > 1) {
+        int half = strip.size() / 2;
+        vector<int> new_strip(half);
+        
+        for (int i = 0; i < half; ++i) {
+            new_strip[i] = strip[i];
+        }
+        
+        // Запоминаем порядок правой половины (снизу вверх)
+        for (int i = strip.size() - 1; i >= half; --i) {
+            order.push_back(strip[i]);
+        }
+        
+        strip = new_strip;
+    }
+    
+    order.push_back(strip[0]);
+    
+    reverse(order.begin(), order.end());
+    
+    return order;
+}
+
+// Функция для определения исходных номеров клеток
+vector<int> compute_numbering(int k) {
+    int n = pow(2, k);
+    vector<int> numbering(n);
+    vector<int> order = fold_and_number(k);
+    
+    // Присваиваем номера согласно конечному порядку
+    for (int i = 0; i < n; ++i) {
+        numbering[order[i] - 1] = i + 1;
+    }
+    
+    return numbering;
+}
+
+int main() {
+    int k;
+    cout << "Введите степень k (длина полоски будет 2^k): ";
+    cin >> k;
+    
+    vector<int> numbering = compute_numbering(k);
+    
+    cout << "Исходная нумерация клеток для правильного порядка после складывания:\n";
+    for (int num : numbering) {
+        cout << num << " ";
+    }
+    cout << endl;
+    
+    return 0;
+}
